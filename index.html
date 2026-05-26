@@ -317,11 +317,11 @@
                         </td>
                     </tr>
                     <tr>
-                        <td rowspan="2" style="vertical-align: middle; font-weight: bold; color:#4b5563;">聲調與變調(7)</td>
+                        <td rowspan="2" style="vertical-align: middle; font-weight: bold; color:#4b5563;">聲調與變調(10)</td>
                         <td>* 一、二、三、四聲及輕聲調值準確</td>
                         <td class="input-cell">
                             <div class="score-pad" id="pad-v_4">
-                                <script>for(let j=0;j<=4;j++) document.write(`<button class="pad-btn" onclick="setDirectScore('v_4', ${j})">${j}</button>`);</script>
+                                <script>for(let j=0;j<=5;j++) document.write(`<button class="pad-btn" onclick="setDirectScore('v_4', ${j})">${j}</button>`);</script>
                             </div>
                         </td>
                     </tr>
@@ -329,7 +329,7 @@
                         <td>* 變調規則運用自然</td>
                         <td class="input-cell">
                             <div class="score-pad" id="pad-v_5">
-                                <script>for(let j=0;j<=3;j++) document.write(`<button class="pad-btn" onclick="setDirectScore('v_5', ${j})">${j}</button>`);</script>
+                                <script>for(let j=0;j<=5;j++) document.write(`<button class="pad-btn" onclick="setDirectScore('v_5', ${j})">${j}</button>`);</script>
                             </div>
                         </td>
                     </tr>
@@ -482,7 +482,7 @@
                         <span id="statusTarget" style="font-weight: bold; color: #2563eb;">未選擇座號</span>
                     </div>
                     <div class="total-score-box">
-                        總分：<span id="totalScoreLabel">0</span> / 100
+                        總分：<span id="totalScoreLabel">0</span>
                     </div>
                     <div class="action-buttons">
                         <button class="save-btn" id="saveBtn" onclick="saveCurrentScore()">儲存當前評分</button>
@@ -605,7 +605,6 @@
             alert(`座號 ${currentSeat} 號評分儲存成功！`);
         }
 
-        // 核心全新功能：匯出包含各細項的 TXT 純文字檔案
         function exportToTXT() {
             let hasRecords = false;
             for (let i = 1; i <= 30; i++) {
@@ -624,7 +623,6 @@
             const currentDate = new Date().toLocaleDateString('zh-TW', {year: 'numeric', month: '2-digit', day: '2-digit'});
             const currentTime = new Date().toLocaleTimeString('zh-TW', {hour12: false});
             
-            // 1. 組裝 TXT 文件標頭與欄位對齊指南
             let txtContent = "========================================================================================\n";
             txtContent += `國語朗讀比賽 - 全班學生成績總結果報表 (細項清單)\n`;
             txtContent += `匯出日期時間: ${currentDate} ${currentTime}\n`;
@@ -632,19 +630,16 @@
             txtContent += "座號\t總分\t狀態\t各項評分指標細項(項目:分值)\n";
             txtContent += "----------------------------------------------------------------------------------------\n";
 
-            // 2. 逐一輪詢 1~30 號學生的細項數據
             for (let i = 1; i <= 30; i++) {
                 const totalScore = calculateTotalForSeat(i);
                 const statusText = isScoredMap[i] ? "已評分" : "未評分";
                 
-                // 動態串接 21 項細項指標
                 let detailItems = [];
                 itemIds.forEach((id, index) => {
                     detailItems.push(`${labels[index]}:${db[i][id]}`);
                 });
                 const detailStr = detailItems.join(" ");
 
-                // 填入本行資料
                 txtContent += `${i}號\t${totalScore}分\t[${statusText}]\t{ ${detailStr} }\n`;
             }
 
@@ -652,15 +647,11 @@
             txtContent += `評審老師簽章：___________________________   填表日期：${currentDate}\n`;
             txtContent += "========================================================================================\n";
 
-            // 3. 建立網頁 Blob 下載鏈結
             const blob = new Blob([txtContent], { type: "text/plain;charset=utf-8;" });
             const link = document.createElement("a");
-            
-            // 將檔名自動附加上當前年月日，方便存檔
             const dateStr = new Date().toISOString().slice(0, 10);
             link.download = `國語朗讀全班評分結果_${dateStr}.txt`;
             
-            // 觸發原生下載機制
             link.href = window.URL.createObjectURL(blob);
             link.style.display = "none";
             document.body.appendChild(link);
